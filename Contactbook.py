@@ -11,7 +11,7 @@ window.geometry ("500x700") #defining the size of window
 contacts={}
 
 #adding the contact details 
-tk.Label (window,text="NAME",font=("Arial",12 ,"bold")).pack()
+tk.Label (window,text="NAME",font=("Arial",12 ,"bold")).pack() 
 name=tk.Entry(window,width="40")
 name.pack(pady=10)
 
@@ -49,6 +49,7 @@ result_box = tk.Text(window, height=10, width=30)
 result_box.pack(pady=10)
 def view_contact():
     result_box.delete(1.0, tk.END)  
+    
 
     if not contacts:
         result_box.insert(tk.END, "No contacts available.\n")
@@ -59,15 +60,16 @@ def view_contact():
         result_box.insert(tk.END, f"Email: {info['Email']}\n")
         result_box.insert(tk.END, f"Address: {info['Address']}\n")
         result_box.insert(tk.END, "-"*40 + "\n")
+    clear()
     
 tk.Button(window,text="View contact list",bg="Yellow",font=("Arial",8,"bold"),command=view_contact).pack(pady=10)
 
 
 def clear():
-    name.Delete(0,tk.END)
-    phone_number.Delete(0,tk.END)
-    email.Delete(0,tk.END)
-    address.Delete(0,tk.END)
+    name.delete(0,tk.END)
+    phone_number.delete(0,tk.END)
+    email.delete(0,tk.END)
+    address.delete(0,tk.END)
 
 # adding the search feature
 
@@ -77,6 +79,20 @@ search_frame.pack(pady=10)
 tk.Label(search_frame, text="Search:", font=("Arial", 10, "bold")).pack(side="left", padx=5)
 search = tk.Entry(search_frame, width=20)
 search.pack(side="left", padx=5)
+
+def search_contact():
+    query = search.get().lower()
+    result_box.delete(1.0, tk.END)
+
+    found = False
+    for contact_name in contacts:
+        if query in contact_name.lower():
+            result_box.insert(tk.END, contact_name + "\n")
+            found = True
+
+    if not found:
+        result_box.insert(tk.END, "No matching contacts found.\n")
+
 tk.Button(search_frame, text="Search", command=search).pack(side="left", padx=5)
 
 update_frame = tk.Frame(window)
