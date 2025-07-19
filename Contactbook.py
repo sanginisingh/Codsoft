@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 
 
 
@@ -50,9 +51,11 @@ def save_contact():
         clear()
     else:
         messagebox.showwarning("Please Enter the NAME and PHONE NUMBER")
+
+tk.Button(window,text="Save contact",bg="Green",font=("Arial",8,"bold"),command=save_contact).pack(pady=10)
     
       
-tk.Button(window,text="Save contact",bg="Green",font=("Arial",8,"bold"),command=save_contact).pack(pady=10)
+
 
 # adding the search feature
 
@@ -63,59 +66,35 @@ tk.Label(search_frame, text="Search:", font=("Arial", 10, "bold")).pack(side="le
 search = tk.Entry(search_frame, width=20)
 search.pack(side="left", padx=5)
 
+search_dropdown = ttk.Combobox(search_frame, width=20, state="readonly")
+search_dropdown.pack(side="left", padx=5)
+search_dropdown.set("Select Contact")
+
+def show_selected_contact(event):
+    name = search_dropdown.get()
+    contact = contacts.get(name)
+    if contact:
+        messagebox.showinfo("Contact Details",
+                            f"Name: {name}\nPhone: {contact['Phone']}\nEmail: {contact['Email']}\nAddress: {contact['Address']}")
+
+search_dropdown.bind("<<ComboboxSelected>>", show_selected_contact)
+
 def search_contact():
     search_term = search.get().strip().lower()
-    contact_listbox.delete(0, tk.END)  # Clear current listbox
+    matches = [name for name in contacts if search_term in name.lower()]
 
-    found = False
-    for name in contacts:
-        if search_term in name.lower():
-            contact_listbox.insert(tk.END, name)
-            found = True
-
-    if not found:
+    if matches:
+        search_dropdown["values"] = matches
+        search_dropdown.set("Select Contact")
+    else:
+        search_dropdown["values"] = []
+        search_dropdown.set("No match found")
         messagebox.showinfo("Not Found", "No contact matched your search.")
+    search_dropdown.event_generate('<Button-1>')
+
 tk.Button(search_frame, text="Search", command=search_contact).pack(side="left", padx=5)
 
-update_frame = tk.Frame(window)
-update_frame.pack(pady=10)
-
-tk.Label(update_frame, text="Update:", font=("Arial", 10, "bold")).pack(side="left", padx=5)
-update = tk.Entry(update_frame, width=20)
-update.pack(side="left", padx=5)
-tk.Button(update_frame, text="Update", command=update).pack(side="left", padx=5)
-
-def update_contact():
-    original_name = update_entry.get().strip()
-
-    if original_name not in contacts:
-        messagebox.showwarning("Not Found", f"No contact found with the name: {original_name}")
-        return
-
-    new_name = name.get().strip()
-    new_phone = phone_number.get().strip()
-    new_email = email.get().strip()
-    new_address = address.get().strip()
-
-    if not new_name or not new_phone:
-        messagebox.showwarning("Missing Info", "Please enter both updated NAME and PHONE NUMBER.")
-        return
-
-    # Update contact: remove old name key if name is changed
-    if new_name != original_name:
-        del contacts[original_name]
-
-    contacts[new_name] = {
-        "Phone": new_phone,
-        "Email": new_email,
-        "Address": new_address
-    }
-
-    messagebox.showinfo("Success", f"Contact '{original_name}' updated successfully to '{new_name}'")
-    refresh_contact_list()
-    clear()
-
-
+#adding the delete feature
 delete_frame = tk.Frame(window)
 delete_frame.pack(pady=10)
 
@@ -136,17 +115,6 @@ def delete_contact():
         messagebox.showwarning("Not Found", f"No contact found with the name: {name}")
 
 tk.Button(delete_frame, text="Delete", command=delete_contact).pack(side="left", padx=5)
-
-def delete_contact():
-    name = delete.get().strip()
-    if name in contacts:
-        confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete contact: {name}?")
-        if confirm:
-            del contacts[name]
-            messagebox.showinfo("Deleted", f"Contact '{name}' deleted successfully.")
-            clear()
-    else:
-        messagebox.showwarning("Not Found", f"No contact found with the name: {name}")
 
 
 view_frame = tk.Frame(window)
@@ -181,6 +149,8 @@ def show_contact_details(event):
                                 f"Name: {name}\nPhone: {contact['Phone']}\nEmail: {contact['Email']}\nAddress: {contact['Address']}")
 
 contact_listbox.bind("<<ListboxSelect>>", show_contact_details)
+
+
 
 
 
