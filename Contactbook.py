@@ -6,8 +6,8 @@ from tkinter import ttk
 
 #creating the main window where the complete system will be displayed
 window=tk.Tk()
-window.title("Contact Book") #adding the title of the window
-window.geometry ("500x700") #defining the size of window
+window.title("Contact Book") 
+window.geometry ("500x700") 
 
 contacts={}
 
@@ -42,6 +42,8 @@ def save_contact():
     address_entered=address.get()
     
     if name_entered and phone_number_entered:
+        if name_entered != update.get().strip() and update.get().strip() in contacts:
+            del contacts[update.get().strip()]
         contacts[name_entered] = {
     "Phone": phone_number_entered,
     "Email": email_entered,
@@ -54,11 +56,7 @@ def save_contact():
 
 tk.Button(window,text="Save contact",bg="Green",font=("Arial",8,"bold"),command=save_contact).pack(pady=10)
     
-      
-
-
 # adding the search feature
-
 search_frame = tk.Frame(window)
 search_frame.pack(pady=10)
 
@@ -122,7 +120,7 @@ view_frame.pack(pady=20)
 
 tk.Label(view_frame, text="All Contacts", font=("Arial", 12, "bold")).pack()
 
-# Scrollbar and Listbox
+#scrollbar and listbox
 scrollbar = tk.Scrollbar(view_frame)
 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
@@ -131,14 +129,12 @@ contact_listbox.pack()
 
 scrollbar.config(command=contact_listbox.yview)
 
-
-
 def refresh_contact_list():
-    contact_listbox.delete(0, tk.END)  # Clear current items
+    contact_listbox.delete(0, tk.END)  
     for name in contacts:
         contact_listbox.insert(tk.END, name)
 
-
+#display the contact info 
 def show_contact_details(event):
     selected = contact_listbox.curselection()
     if selected:
@@ -149,6 +145,38 @@ def show_contact_details(event):
                                 f"Name: {name}\nPhone: {contact['Phone']}\nEmail: {contact['Email']}\nAddress: {contact['Address']}")
 
 contact_listbox.bind("<<ListboxSelect>>", show_contact_details)
+
+#update contact feature
+update_frame = tk.Frame(window)
+update_frame.pack(pady=10)
+
+tk.Label(update_frame, text="Update:", font=("Arial", 10, "bold")).pack(side="left", padx=5)
+update = tk.Entry(update_frame, width=20)
+update.pack(side="left", padx=5)
+
+def load_contact_for_update():
+    original_name = update.get().strip()
+    if original_name in contacts:
+        #load current details into the fields
+        name.delete(0, tk.END)
+        name.insert(0, original_name)
+
+        phone_number.delete(0, tk.END)
+        phone_number.insert(0, contacts[original_name]["Phone"])
+
+        email.delete(0, tk.END)
+        email.insert(0, contacts[original_name]["Email"])
+
+        address.delete(0, tk.END)
+        address.insert(0, contacts[original_name]["Address"])
+
+        #inform user to update and save
+        messagebox.showinfo("Edit Mode", f"Editing contact: {original_name}")
+    else:
+        messagebox.showwarning("Not Found", f"No contact found with the name: {original_name}")
+
+tk.Button(update_frame, text="Load", command=load_contact_for_update).pack(side="left", padx=5)
+
 
 
 
