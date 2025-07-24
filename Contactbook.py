@@ -177,44 +177,4 @@ def load_contact_for_update():
 
 tk.Button(update_frame, text="Load", command=load_contact_for_update).pack(side="left", padx=5)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 window.mainloop()
