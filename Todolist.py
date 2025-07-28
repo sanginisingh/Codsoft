@@ -6,31 +6,63 @@ window.geometry("500x500")
 
 tk.Label (window,text="ADD TO THE LIST",font=("Arial",10,"bold")).pack()
 addTask=tk.Entry(window,width=40)
-addTask.pack(pady=20)
+addTask.pack(pady=15)
 
+def add_task():
+    task=addTask.get()
+    if task:
+        todoList.insert(tk.END,task)
+        addTask.delete(0,tk.END)
+tk.Button(window,text="ADD",command=add_task, width= 10,bg="light green").pack(pady=5)
+    
+    
 tk.Label(window,text="DELETE FROM THE LIST",font=("Arial", 10, "bold")).pack()
 deleteTask= tk.Entry(window,width=40)
-deleteTask.pack(pady=20)
+deleteTask.pack(pady=15)
+
+def delete_task():
+    taskDelete= deleteTask.get()
+    found= False
+    for i in range(todoList.size()):
+        if todoList.get(i)==taskDelete:
+            todoList.delete(i)
+            deleteTask.delete(0,tk.END)
+            found =True
+            break
+tk.Button(window,text="DELETE",width=10,bg="yellow",command=delete_task).pack(pady=5)
+
 
 tk.Label(window,text="TO-DO LIST",font=("Arial",10,"bold")).pack()
-
 view_frame=tk.Frame(window)
-view_frame.pack(pady=20)
-todoList= tk.Listbox(view_frame,width=50,height=10)
+view_frame.pack(pady=15)
+todoList= tk.Listbox(view_frame,width=50,height=10,selectmode=tk.EXTENDED)
 todoList.pack()
 
+def mark_as_done():
+    selected_items = list(todoList.curselection())
+    for i in selected_items:
+        task = todoList.get(i)
+        if not task.endswith("✔️"):
+            todoList.delete(i)
+            todoList.insert(i, task + " ✔️")
 
+clear_frame=tk.Frame(window)
+clear_frame.pack(pady=20)
 
+def clearAll():
+    todoList.delete(0,tk.END)
 
+button_frame = tk.Frame(window)
+button_frame.pack(pady=15)
 
+tk.Button(button_frame, text="Mark as Done", command=mark_as_done, bg="lightblue", width=15).pack(side=tk.LEFT, padx=20)
 
+tk.Button(button_frame, text="Clear All", command=clearAll, bg="red", fg="white", width=15).pack(side=tk.LEFT, padx=20)
 
-
-
-
-
+button_frame.pack(anchor="center")
 
 window.mainloop()
+
 
 
 
